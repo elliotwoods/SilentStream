@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+	<link rel="stylesheet" href="stylesheets/broadcast.css">
+
+	<!-- Font Awesome CSS -->
+	<script src="../node_modules/@fortawesome/fontawesome-free/js/all.js" crossorigin="anonymous"></script>
+
+	<title>📢 Silent Stream</title>
+</head>
+
+<body>
+	<div>
+		<h1>Enable audio input</h1>
+
+		<div class="inputSelector">
+			<label>Select audio input device: </label>
+			<select></select>
+		</div>
+
+		<button id="recordButton"><i class="fas fa-circle"></i> Record</button>
+		
+	</div>
+
+
+	<div>
+		<h1>Monitor audio signals</h1>
+		<div id="left">
+			<h2>Left</h2>
+			<meter class="clip" high="0.25" max="1" value="0"></meter><div class="value"></div>
+			<meter class="average" high="0.25" max="1" value="0"></meter><div class="value"></div>
+		</div>
+		<div id="right">
+			<h2>Right</h2>
+			<meter class="clip" high="0.25" max="1" value="0"></meter><div class="value"></div>
+			<meter class="average" high="0.25" max="1" value="0"></meter><div class="value"></div>
+		</div>
+	</div>
+
+
+	<div>
+		<h1>Turn monitoring on/off</h1>
+		<div class="outputSelector">
+			<label>Select audio output for monitoring: </label>
+			<select></select>
+			<video playsinline autoplay></video>
+		</div>
+	</div>
+
+
+	<div>
+		<h1>View connected clients</h1>
+	</div>
+
+
+	<div>
+		<h1>Handling multiple people trying to load/control this page at the same time</h1>
+	</div>
+
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+	<!-- jQuery -->
+	<script src="../node_modules/jquery/dist/jquery.js"></script>
+
+	<!-- popper -->
+	<script src="thirdparty/popper.min.js"></script>
+
+	<!-- bootstrap -->
+	<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+		crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/js/broadcast.js"></script>
+</body>
+
+</html>

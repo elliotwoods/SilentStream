@@ -1,0 +1,33 @@
+{
+  "name": "silentstream",
+  "version": "1.0.0",
+  "description": "Low-latency multi-peer audio streaming for silent discos using WebRTC",
+  "main": "bin/www.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elliotwoods/SilentStream.git"
+  },
+  "author": "Elliot Woods",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/elliotwoods/SilentStream/issues"
+  },
+  "homepage": "https://github.com/elliotwoods/SilentStream#readme",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.1",
+    "bootstrap": "^4.5.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "formidable": "^1.2.1",
+    "http-errors": "~1.6.3",
+    "jquery": "^3.5.1",
+    "lowdb": "^1.0.0",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11",
+    "socket.io": "^2.3.0"
+  }
+}
