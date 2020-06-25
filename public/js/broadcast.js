@@ -4,8 +4,8 @@ var peerConfig =  {
 	port: 9000,
 	debug: 2
 };
-serverName = null;
-peerConfig = null;
+//serverName = null;
+//peerConfig = null;
 
 function repopulateConnections() {
 	let list = $("#connections_list");
@@ -38,20 +38,20 @@ $("#recordButton").click(() => {
 	$("#recordButton").hide();
 	var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 	var userMediaStream;
-	getUserMedia({ 
+	let config = { 
 		audio : {
-			deviceId: $(".inputSelector select option:selected").val(),
+			deviceId: $("#input_device_selector option:selected").val(),
 			autoGainControl: false,
-			channelCount: 2,
+			channelCount: { ideal: 2},
 			echoCancellation: false,
-			latency: 0,
 			noiseSuppression: false,
-			sampleRate: 48000,
+			sampleRate: 44100,
 			sampleSize: 16,
 			volume: 1.0
 		  },
 		video : false
-	}, (stream) => {
+	};
+	getUserMedia(config, (stream) => {
 		userMediaStream = stream;
 		window.userMediaStream = userMediaStream;
 	}, (error) => {

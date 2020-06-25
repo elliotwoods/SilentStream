@@ -1,21 +1,10 @@
-var serverName = "6znge7x7all00000";
+var serverName = "Party_Not_PaTI_Server";
 var peerConfig =  {
 	host: "/",
 	port: 9000,
 	debug: 2
 };
-peerConfig = null;
-
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-var userMediaStream;
-getUserMedia({
-	audio : true,
-	video : false
-}, (stream) => {
-	userMediaStream = stream;
-}), (error) => {
-	console.error("Failed to get media stream", error);
-};
+//peerConfig = null;
 
 function open() {
 	var peer = new Peer(null, peerConfig);
@@ -68,7 +57,7 @@ function open() {
 		});
 		window.call = call;
 
-		call.answer(userMediaStream);
+		call.answer();
 	});
 	peer.on('disconnected', () => {
 		console.log("Peer : Disconnected");
