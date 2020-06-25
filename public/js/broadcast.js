@@ -1,38 +1,44 @@
-const socket = io();
+var serverName = "Party_Not_PaTI_Server";
+var peerConfig =  {
+	host: "/",
+	port: 9000,
+	debug: 2
+};
+serverName = null;
+peerConfig = null;
 
-const leftMeterClip = document.querySelector("#left .clip");
-const rightMeterClip = document.querySelector("#right .clip");
-
-const leftMeterAverage = document.querySelector("#left .average");
-const rightMeterAverage = document.querySelector("#right .average");
-
-let videoElement = document.querySelector("video");
-
-try {
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-}
-catch (e) {
-	alert('Web Audio API not supported');
-	console.log(e);
-}
-
-var audioInput;
-var script;
-var detectedLevelClip = [0, 0];
-var detectedLevelAverage = [0, 0];
-
-var rtcPeerConnection = null;
-
-const minDbValue = -10.0;
-function decibelRangeValue(realValue) {
-	let value = Math.log10(realValue) / minDbValue;
-	return Math.max(Math.min(1.0 - value, 1), 0);
+function repopulateConnections() {
+	let list = $("#connections_list");
+	list.empty();
+	for(let connection of Object.keys(peer.connections)) {
+		list.append($(`<ul>${connection}</ul>`));
+	}
 }
 
-async function startRecord() {
-	window.audioContext = new AudioContext();
+async function enumerateDevices() {
+	let allDevices = await navigator.mediaDevices.enumerateDevices();
+	let deviceIndex = 0;
+	for(let device of allDevices) {
+		switch(device.kind) {
+			case 'audioinput':
+				$("<option />")
+				.attr('value', device.deviceId)
+				.text(device.label || `Input #${deviceIndex}`)
+				.appendTo("#input_device_selector");
+			    deviceIndex++;
+			break;
+		}
+	}
+	$("#recordButton").show();
+}
+$("#recordButton").hide();
+enumerateDevices();
 
-	let inputConstraints = {
+$("#recordButton").click(() => {
+	$("#recordButton").hide();
+	var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+	var userMediaStream;
+	getUserMedia({ 
 		audio : {
 			deviceId: $(".inputSelector select option:selected").val(),
 			autoGainControl: false,
@@ -45,119 +51,64 @@ async function startRecord() {
 			volume: 1.0
 		  },
 		video : false
-	};
-	let stream = await navigator.mediaDevices.getUserMedia(inputConstraints);
-
-	// put var into global scope
-	window.stream = stream;	
-
-	script = audioContext.createScriptProcessor(256, 2, 2);
-
-	script.onaudioprocess = (event) => {
-		for(let channelIndex = 0; channelIndex < 2; channelIndex++) {
-			const input = event.inputBuffer.getChannelData(channelIndex);
-			let max = 0;
-			let sumSquares = 0;
-			for(let i=0; i<input.length; ++i) {
-				const level2 = input[i] * input[i];
-				if(level2 > max) {
-					max = level2;
-				}
-				sumSquares += level2
-			}
-			detectedLevelClip[channelIndex] = max;
-			detectedLevelAverage[channelIndex] = sumSquares / input.length;
-		}
-	}
-
-	audioInput = audioContext.createMediaStreamSource(stream);
-	audioInput.connect(script);
-
-	setInterval(() => {
-		leftMeterClip.value = decibelRangeValue(detectedLevelClip[0]).toFixed(2);
-		leftMeterAverage.value = decibelRangeValue(detectedLevelAverage[0]).toFixed(2);
-		rightMeterClip.value = decibelRangeValue(detectedLevelClip[1]).toFixed(2);
-		rightMeterAverage.value = decibelRangeValue(detectedLevelAverage[1]).toFixed(2);
+	}, (stream) => {
+		userMediaStream = stream;
+		window.userMediaStream = userMediaStream;
+	}, (error) => {
+		console.error("Failed to get user media strream", error);
 	});
-	
-	script.connect(audioContext.destination);
 
-
-
-	rtcPeerConnection = new RTCPeerConnection();
-	rtcPeerConnection.onicecandidate = e => onIceCandidate(rtcPeerConnection, e);
-	stream.getTracks().forEach(track => {
-		rtcPeerConnection.addTrack(track, stream);
+	var peer = new Peer(serverName, peerConfig);
+	peer.on('error', (error) => {
+		console.error("Peer error :");
+		console.error(error);
 	});
-	let connectionDescription = await rtcPeerConnection.createOffer({
-		voiceActivityDetection: false
+	peer.on('open', (id) => {
+		console.log("Peer : Opened with ID : " + id);
+		$("#peer_ID").text(id);
 	});
-	await rtcPeerConnection.setLocalDescription(connectionDescription);
-	socket.emit("setBroadcastDescription", connectionDescription);
+	peer.on('connection', (connection) => {
+		console.log("Peer : Incoming connection:");
+		console.log(connection);
 
-	videoElement.srcObject = stream;
-	updateMonitoring();
-}
+		// call client on connection
+		call = peer.call(connection.peer, userMediaStream);
+		call.on('stream', function(stream) {
+			console.log("Call : Stream");
+			console.log(stream);
+		});
+		call.on('close', function() {
+			console.log("Call : Close");
+		});
+		call.on('error', function(error) {
+			console.error("Call Error :");
+			console.error(error);
+		});
+		window.call = call;
 
-async function updateMonitoring() {
-	let deviceId = $(".outputSelector select option:selected").val();
-	videoElement.setSinkId(deviceId);
+		repopulateConnections();
+	});
 
-	// let outputConstraints = {
-	// 	audio : {
-	// 		deviceId: deviceId,
-	// 	},
-	// 	video : false
-	// };
-	// let outputStream = await navigator.mediaDevices.getUserMedia(outputConstraints);
-	// let audioOutput = audioContext.createMediaStreamDestination(outputStream);
-	// script.connect(audioOutput);
-	
-}
+	peer.on('call', (call) => {
+		console.log("Peer : Incoming call:");
+		console.log(call);
+	});
+	peer.on('disconnected', () => {
+		console.log("Peer : Disconnected");
+		repopulateConnections();
+	});
 
-function onIceCandidate(rtcPeerConnection, event) {
-	console.log(event.candidate);
-}
-
-function handleError(error) {
-	console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-}
-
-let devices = {
-	audioinput : [],
-	audiooutput : [],
-	videoinput : []
-};
-
-async function enumerateDevices() {
-	let allDevices = await navigator.mediaDevices.enumerateDevices();
-	let deviceIndex = 0;
-	for(let device of allDevices) {
-		devices[device.kind].push(device);
+	if(false) {
+		// answer calls
+		var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+		peer.on('call', function (call) {
+			getUserMedia({ video: false, audio: true }, function (stream) {
+				call.answer(stream); // Answer the call with an A/V stream.
+			}, function (err) {
+				console.log('Failed to get local stream', err);
+			});
+		});
 	}
 
-	for(let device of devices.audioinput) {
-		$("<option />")
-			.attr('value', device.deviceId)
-			.text(device.label || `Input #${deviceIndex}`)
-			.appendTo(".inputSelector select");
-		deviceIndex++;
-	}
-
-	for(let device of devices.audiooutput) {
-		$("<option />")
-			.attr('value', device.deviceId)
-			.text(device.label || `Output #${deviceIndex}`)
-			.appendTo(".outputSelector select");
-		deviceIndex++;
-	}
-}
-
-$(document).ready(() => {
-
-	enumerateDevices();
-
-	$("#recordButton").click(() => {
-		startRecord();
-	})
+	window.peer = peer;
 });

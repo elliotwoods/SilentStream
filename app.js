@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
+const { PeerServer } = require('peer');
 
 var app = express();
 
@@ -40,5 +41,8 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.render('error');
 });
+
+
+const peerServer = PeerServer({port: 9000});
 
 module.exports = app;

@@ -18,13 +18,50 @@
 
 <body>
 	<div>
-		<h1>Activate listening</h1>
-		<p>
-			Peer ID : <span id="peer_ID"></span>
-		</p>
-		<button id="listenButton"><i class="fas fa-play"></i> Play</button>
-		<button id="stopButton"><i class="fas fa-square"></i> Stop</button>
-		<audio id="audio" autoplay controls></audio>
+		<h1>Enable audio input</h1>
+
+		<div class="inputSelector">
+			<label>Select audio input device: </label>
+			<select></select>
+		</div>
+
+		<button id="recordButton"><i class="fas fa-circle"></i> Record</button>
+		
+	</div>
+
+
+	<div>
+		<h1>Monitor audio signals</h1>
+		<div id="left">
+			<h2>Left</h2>
+			<meter class="clip" high="0.25" max="1" value="0"></meter><div class="value"></div>
+			<meter class="average" high="0.25" max="1" value="0"></meter><div class="value"></div>
+		</div>
+		<div id="right">
+			<h2>Right</h2>
+			<meter class="clip" high="0.25" max="1" value="0"></meter><div class="value"></div>
+			<meter class="average" high="0.25" max="1" value="0"></meter><div class="value"></div>
+		</div>
+	</div>
+
+
+	<div>
+		<h1>Turn monitoring on/off</h1>
+		<div class="outputSelector">
+			<label>Select audio output for monitoring: </label>
+			<select></select>
+			<video playsinline autoplay></video>
+		</div>
+	</div>
+
+
+	<div>
+		<h1>View connected clients</h1>
+	</div>
+
+
+	<div>
+		<h1>Handling multiple people trying to load/control this page at the same time</h1>
 	</div>
 
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -46,9 +83,9 @@
 		crossorigin="anonymous"></script>
 
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="../node_modules/peerjs/dist/peerjs.js"></script>
+	<script src="/thirdparty/peerjs.min.js"></script>
 
-	<script src="/js/listen.js"></script>
+	<script src="/js/tests.js"></script>
 </body>
 
 </html>

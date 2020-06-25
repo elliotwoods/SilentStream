@@ -8,6 +8,7 @@ var app = require('../app');
 
 var debug = require('debug')('transcribe:server');
 var http = require('http');
+const { ExpressPeerServer } = require('peer');
 
 /**
  * Get port from environment and store in Express.
@@ -21,6 +22,15 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * Create Peer JS.
+ */
+// const peerServer = ExpressPeerServer(server, {
+// 	debug: true,
+// 	path: '/myapp'
+// });
+// app.use('/peerjs', peerServer);
 
 /**
  * Listen on provided port, on all network interfaces.
