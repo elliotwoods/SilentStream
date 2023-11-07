@@ -17,4 +17,5 @@ If you have trouble then try:
 Note : if you're playing sound from the same computer that's doing the streaming, then you'll need some kind of audio loopback device. e.g.:
 
 * For OSX you could use BlackHole https://github.com/ExistentialAudio/BlackHole
-* For Windows you could use LoopBeAudio https://www.nerds.de/en/loopbeaudio.html
+* For Windows you could use LoopBeAudio https://www.nerds.de/en/loopbeaudio.html (although I'm sure there are free things out there also)
+
