@@ -42,7 +42,19 @@ app.use(function(err, req, res, next) {
 	res.render('error');
 });
 
+// Set the port for the Express application
+const PORT = process.env.PORT || 5000;
 
-const peerServer = PeerServer({port: 9000});
+// Start the Express server
+const server = app.listen(PORT, () => {
+	console.log(`Server is running at http://localhost:${PORT}/`);
+	console.log(`For broadcasting go to http://localhost:${PORT}/broadcast.html`);
+	console.log(`Clients can connect at http://localhost:${PORT}/`);
+});
+  
+// PeerServer is running on port 9000
+const peerServer = PeerServer({ port: 9000 }, () => {
+	console.log('PeerServer is running on port 9000');
+});
 
 module.exports = app;
