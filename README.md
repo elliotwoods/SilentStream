@@ -8,5 +8,9 @@ npm install
 npm start
 ```
 
-Then run (e.g. from Visual Studio Code)
+If you have trouble then try:
+
+1. Open the folder in VS Code
+2. Run app.js
+3. See what's up
 
